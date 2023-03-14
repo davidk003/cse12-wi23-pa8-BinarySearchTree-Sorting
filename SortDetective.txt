@@ -1,0 +1,43 @@
+SELECTION SORT
+INSERTION SORT
+MERGE SORT
+QUICK SORT
+
+RANDOM
+Alpha and beta seems like it can handle arrays with very large Ns, indicates better runtime
+Gamma and beta delta with large N random, Gamma and delta may be Insertion and selection sort
+
+INORDER, Gamma performs well, but delta performs terribly, not finishing.
+
+
+alpha and beta are merge and quick???
+quicksort(worst case)= o(n^2)
+mergesort(worst case)= o(nlog(n))
+
+
+Alpha
+Does well with large lists, HOWEVER, it does worse on random than any other
+
+Beta
+Does very well for almostOrder and Random, does VERY BAD comparatively for reverse order and inorder.
+Because quicksort's worstcase is inorder and reverseorder or repeats, beta might be quicksort.
+
+
+Delta
+DELTA MAKES THE SAME NUMBER OF COMPARISONS NO MATTER WHAT THE LIST PROPERTY
+INORDER DELTA SEEMS TO BE n^2 (best case) https://i.imgur.com/dmp9pWn.png
+
+❌ NOT QUICKSORT
+Delta ?? SELECTIONSORT???
+
+
+Gamma
+Scales very well, INORDER, it does the best out of all algorithms, (o(n) best case)
+Gamma = Insertionsort?????
+
+
+Answer for now:
+Alpha = mergesort
+Beta = quicksort
+Gamma = insertionsort
+Delta = selectionsort
