@@ -9,6 +9,7 @@
 import org.junit.Assert.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -87,8 +88,10 @@ public class CustomTester {
         compareBST(loadedBST, realtestBST);
     }
 
+
+    
     public void compareBST(MyBST<Integer, String> expectedBST, 
-        MyBST<Integer, String> actualBST)
+    MyBST<Integer, String> actualBST)
     {
         MyBST.MyBSTNode<Integer, String> expectedNode = expectedBST.root;
         MyBST.MyBSTNode<Integer, String> actualNode = actualBST.root;
@@ -96,13 +99,38 @@ public class CustomTester {
         {
             assertEquals(expectedNode.getKey(), actualNode.getKey());
             assertEquals(expectedNode.getValue(), actualNode.getValue());
-            assertEquals(expectedNode.getLeft() != null, actualNode.getLeft() != null);
-            assertEquals(expectedNode.getRight() != null, actualNode.getRight() != null);
+            if (expectedNode.getLeft() == null) {
+                assertNull(actualNode.getLeft());
+            } else {
+                assertNotNull(actualNode.getLeft());
+            }
+            if (expectedNode.getRight() == null) {
+                assertNull(actualNode.getRight());
+            } else {
+                assertNotNull(actualNode.getRight());
+            }
             expectedNode = expectedNode.getLeft();
             actualNode = actualNode.getLeft();
         }
     }
 
+    // public void compareBST(MyBST<Integer, String> expectedBST, 
+    //     MyBST<Integer, String> actualBST)
+    // {
+    //     MyBST.MyBSTNode<Integer, String> expectedNode = expectedBST.root;
+    //     MyBST.MyBSTNode<Integer, String> actualNode = actualBST.root;
+    //     while (expectedNode != null && actualNode != null)
+    //     {
+    //         assertEquals(expectedNode.getKey(), actualNode.getKey());
+    //         assertEquals(expectedNode.getValue(), actualNode.getValue());
+    //         assertEquals(expectedNode.getLeft() != null,
+    //             actualNode.getLeft() != null);
+    //         assertEquals(expectedNode.getRight() != null,
+    //             actualNode.getRight() != null);
+    //         expectedNode = expectedNode.getLeft();
+    //         actualNode = actualNode.getLeft();
+    //     }
+    // }
 
 
 
