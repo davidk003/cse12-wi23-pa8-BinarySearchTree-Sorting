@@ -2,7 +2,7 @@
  * Name: David Kim
  * Email: dck003@ucsd.edu
  * PID: A17394361
- * Sources used: Zybook instructions for percolation method
+ * Sources used: Zybook for the remove and inorder methods.
  * 
  * This file contains PA8's MyBST class.
  */

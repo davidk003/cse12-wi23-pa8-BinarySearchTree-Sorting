@@ -2,7 +2,7 @@
  * Name: David Kim
  * Email: dck003@ucsd.edu
  * PID: A17394361
- * Sources used: Zybook instructions for percolation method
+ * Sources used: N/A
  * 
  * This file contains a custom tester class for PA8's MyBST.
  */
@@ -18,7 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 
-public class CustomTester {
+public class CustomTester
+{
     
     @Before
     public void generateRandomBST()
@@ -40,28 +41,38 @@ public class CustomTester {
             Integer key = keys[i];
             String value = values[i];
     
-            while (currNode != null) {
+            while (currNode != null)
+            {
                 int comparisonVal = key.compareTo(currNode.getKey());
-                if (comparisonVal == 0) {
+                if (comparisonVal == 0)
+                {
                     currNode.setValue(value);
                     break;
-                } else if (comparisonVal < 0) {
+                }
+                else if (comparisonVal < 0)
+                {
                     parentNode = currNode;
                     currNode = currNode.getLeft();
-                } else {
+                }
+                else
+                {
                     parentNode = currNode;
                     currNode = currNode.getRight();
                 }
             }
     
-            if (currNode == null) {
+            if (currNode == null)
+            {
                 MyBST.MyBSTNode<Integer, String> newNode =
                     new MyBST.MyBSTNode<>(key, value,null);
                 newNode.setParent(parentNode);
     
-                if (key.compareTo(parentNode.getKey()) < 0) {
+                if (key.compareTo(parentNode.getKey()) < 0)
+                {
                     parentNode.setLeft(newNode);
-                } else {
+                }
+                else
+                {
                     parentNode.setRight(newNode);
                 }
     
@@ -72,14 +83,16 @@ public class CustomTester {
     }
     
     @Test
-    public void testInsertionLoadBST() {
+    public void testInsertionLoadBST()
+    {
         Integer[] keys = {5, 3, 7, 2, 4, 6, 8};
         String[] values = 
             {"five", "three", "seven", "two", "four", "six", "eight"};
         
         MyBST<Integer, String> loadedBST = loadBST(keys, values);
         MyBST<Integer, String> realtestBST = new MyBST<>();
-        for (int i = 0; i < keys.length; i++) {
+        for (int i = 0; i < keys.length; i++)
+        {
             assertNull(realtestBST.insert(keys[i], values[i]));
         }
         assertEquals(realtestBST.root, loadedBST.root);
@@ -97,16 +110,23 @@ public class CustomTester {
         MyBST.MyBSTNode<Integer, String> actualNode = actualBST.root;
         while (expectedNode != null && actualNode != null)
         {
-            assertEquals(expectedNode.getKey(), actualNode.getKey());
-            assertEquals(expectedNode.getValue(), actualNode.getValue());
-            if (expectedNode.getLeft() == null) {
+            // assertEquals(expectedNode.getKey(), actualNode.getKey());
+            // assertEquals(expectedNode.getValue(), actualNode.getValue());
+            assertTrue(null, expectedNode.equals(actualNode));
+            if (expectedNode.getLeft() == null)
+            {
                 assertNull(actualNode.getLeft());
-            } else {
+            }
+            else
+            {
                 assertNotNull(actualNode.getLeft());
             }
-            if (expectedNode.getRight() == null) {
+            if (expectedNode.getRight() == null)
+            {
                 assertNull(actualNode.getRight());
-            } else {
+            }
+            else
+            {
                 assertNotNull(actualNode.getRight());
             }
             expectedNode = expectedNode.getLeft();
@@ -131,7 +151,7 @@ public class CustomTester {
     //         actualNode = actualNode.getLeft();
     //     }
     // }
-
+    //better way found
 
 
     //====================== INSERT TESTS =============================
@@ -230,36 +250,64 @@ public class CustomTester {
         assertEquals(bst.root.getRight().getRight().getValue(), "G");
     }
 
+    /**
+     * Tests if BST can handle duplicate key insertion (40 inserted twice)
+     */
     @Test
-    public void testInsertDuplicateKey() {
+    public void testInsertDuplicateKey()
+    {
         MyBST<Integer, String> bst = new MyBST<>();
+        assertEquals(bst.size(), 0);
+        assertNull(bst.root);
+
         bst.insert(50, "A");
-        bst.insert(30, "B");
-        bst.insert(20, "C");
-        bst.insert(40, "D");
-        bst.insert(70, "E");
-        bst.insert(60, "F");
-        bst.insert(80, "G");
-        bst.insert(40, "H");
+        assertEquals(bst.size(), 1);
         assertEquals(bst.root.getKey(), Integer.valueOf(50));
         assertEquals(bst.root.getValue(), "A");
+
+        bst.insert(30, "B");
+        assertEquals(bst.size(), 2);
         assertEquals(bst.root.getLeft().getKey(), Integer.valueOf(30));
         assertEquals(bst.root.getLeft().getValue(), "B");
+
+        bst.insert(20, "C");
+        assertEquals(bst.size(), 3);
         assertEquals(bst.root.getLeft().getLeft().getKey(),
-            Integer.valueOf(20));
+        Integer.valueOf(20));
         assertEquals(bst.root.getLeft().getLeft().getValue(), "C");
+
+        bst.insert(40, "D");
+        assertEquals(bst.size(), 4);
         assertEquals(bst.root.getLeft().getRight().getKey(),
-            Integer.valueOf(40));
-        assertEquals(bst.root.getLeft().getRight().getValue(), "H");
+        Integer.valueOf(40));
+        assertEquals(bst.root.getLeft().getRight().getValue(), "D");
+
+        bst.insert(70, "E");
+        assertEquals(bst.size(), 5);
         assertEquals(bst.root.getRight().getKey(), Integer.valueOf(70));
         assertEquals(bst.root.getRight().getValue(), "E");
+
+        bst.insert(60, "F");
+        assertEquals(bst.size(), 6);
         assertEquals(bst.root.getRight().getLeft().getKey(),
-            Integer.valueOf(60));
+        Integer.valueOf(60));
         assertEquals(bst.root.getRight().getLeft().getValue(), "F");
+
+        bst.insert(80, "G");
+        assertEquals(bst.size(), 7);
         assertEquals(bst.root.getRight().getRight().getKey(),
-            Integer.valueOf(80));
+        Integer.valueOf(80));
         assertEquals(bst.root.getRight().getRight().getValue(), "G");
+
+        assertEquals("D", bst.insert(40, "H"));
+        assertEquals(bst.size(), 7);
+        assertEquals(bst.root.getLeft().getRight().getKey(),
+        Integer.valueOf(40));
+        assertEquals(bst.root.getLeft().getRight().getValue(), "H");
+
+
     }
+
 
 
     //======================== SEARCH TESTS ===============================
@@ -290,6 +338,7 @@ public class CustomTester {
      * Attempts to remove a null key from the BST. By the readme, "remove(null)
      * should return null and !!!!!SHOULD NOT NOT REMOVE ANY NODES!!!!;
      */
+
     @Test
     public void removeNullKeyEmptyBST()
     {
