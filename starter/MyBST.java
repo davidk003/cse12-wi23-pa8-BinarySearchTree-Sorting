@@ -11,11 +11,27 @@ import java.util.ArrayList;
 //QUESTIONS: so search(null) should always return null?
 //WHEN INSERT() replaces a node, should it make a new Node object or can I
 //replace only the value?
+
+/**
+ * The MyBST class contains a binary search tree structure containing nodes
+ * with a key value system. The tree is arranged by the key which must
+ * implement the comparable interface. MyBST also contains within a static
+ * class describing a node in the BST.
+ * 
+ * Instance variables:
+ * root -  A reference to the root node of our tree. A root's parent
+ * should be null. If the tree is empty, then this will be null.
+ * size - number of nodes in a tree.
+ */
 public class MyBST<K extends Comparable<K>, V>
 {
     MyBSTNode<K, V> root = null;
     int size = 0;
 
+    /**
+     * The number of nodes in the BST structure.
+     * @return int value of the size/number of nodes in MyBST
+     */
     public int size()
     {
         return size;
@@ -41,11 +57,11 @@ public class MyBST<K extends Comparable<K>, V>
     public V insert(K key, V value)
     {
         if(key == null){throw new NullPointerException();}
-        //Situation where BST is empty: root is null, or size is 0. 
-        //Ex: root might not be null MAYBE if its been initialized before???
-        if(root == null || size == 0)//Possibly remove size==0 later
+
+        if(root == null)
         {
             root = new MyBSTNode<K,V>(key, value, null);
+            ++size;
             return null;
         }
 
@@ -53,36 +69,35 @@ public class MyBST<K extends Comparable<K>, V>
         MyBSTNode<K,V> currNode = root;
         while(currNode.getKey().compareTo(key)!=0)
         {
-            //if current node's key is less than the key, traverse left
-            if(currNode.getKey().compareTo(key)<0)
+            //if key is less than currNode, traverse left
+            if(key.compareTo(currNode.getKey())<0)
             {
                 //currNode's key is less, try to traverse less but is null,
                 //the node can be inserted into that place.
                 if(currNode.getLeft()==null)
                 {
-                    currNode.setLeft(new MyBSTNode<K,V>(key, value, currNode));
+                    currNode.setLeft(new MyBSTNode<K,V>(key, value,currNode));
+                    ++size;
                     return null;
                 }
                 currNode = currNode.getLeft();
             }
-            else//currNode.getKey().compareTo(key)>0)cant be less than or equal
+            else//key.compareTo(currNode.getKey())>0)cant be less than or equal
             {
                 if(currNode.getRight()==null)
                 {
-                    currNode.setRight(new MyBSTNode<K,V>(key, value, currNode));
+                    currNode.setRight(new MyBSTNode<K,V>(key, value,currNode));
+                    ++size;
                     return null;
                 }
                 currNode = currNode.getRight();
             }
         }
-
+        //When the while loop exits, keys must be equal
+        //Store old value, replace and return.
         V returnVal = currNode.getValue();
         currNode.setValue(value);
         return returnVal;
-        //When the while loop exits, keys must be equal, therefore replace curr
-        // MyBSTNode<K,V> replacementNode =
-        //     new MyBSTNode<>(key, value, currNode.getParent());
-
     }
 
     /**
@@ -103,8 +118,8 @@ public class MyBST<K extends Comparable<K>, V>
         MyBSTNode<K,V> currNode = root;
         while(currNode.getKey().compareTo(key)!=0)
         {
-            //if current node's key is less than the key, traverse left
-            if(currNode.getKey().compareTo(key)<0)
+            //if key is less than currNode, traverse left
+            if(key.compareTo(currNode.getKey())<0)
             {
                 //We know the key is less than currNode's key, and if no
                 //further traversal left is possible (aka null left node),
@@ -112,7 +127,7 @@ public class MyBST<K extends Comparable<K>, V>
                 if(currNode.getLeft()==null){return null;}
                 currNode = currNode.getLeft();
             }
-            else//currNode.getKey().compareTo(key)>0)cant be less than or equal
+            else//key.compareTo(currNode.getKey())>0)cant be less than or equal
             {
                 if(currNode.getRight()==null){return null;}
                 currNode = currNode.getRight();
@@ -144,12 +159,115 @@ public class MyBST<K extends Comparable<K>, V>
      * This means that remove(null)should always return null and not
      * remove any nodes.
      * @param key to search MyBST for and remove node with key.
-     * @return
+     * @return value of node that was removed.
      */
     public V remove(K key)
     {
-        //QUESTION: "If the node has a single child, move that child up to take its place."
-        // TODO
+        if(key==null||root==null){return null;}
+        MyBSTNode<K,V> currNode = root;
+        MyBSTNode<K,V> parentNode = null;
+        while(currNode!=null)
+        {
+            if(currNode.key.compareTo(key)==0)
+            {
+                //input key and currnode key match
+                if(currNode.getLeft()==null&&currNode.getRight()==null)
+                {
+                    //No children, currNode is a leaf node
+                    V removedVal = currNode.getValue();
+                    if(parentNode == null) //If currnode is root
+                    {
+                        root = null;//Remove node
+                    }
+                    else if(parentNode.getLeft()==currNode)
+                    {
+                        //No children, set parent's left to null
+                        parentNode.left = null;
+                    }
+                    else
+                    {
+                        //No children, set parent's right to null
+                        parentNode.right = null;
+                    }
+                    --size;
+                    return removedVal;
+                }
+                else if(currNode.getRight()==null)//Has only left child
+                {
+                    V removedVal = currNode.getValue();
+                    if(parentNode == null)//Node to remove is root, left child
+                    {
+                        //replace root with left child, set null parent
+                        root = currNode.getLeft();
+                        root.setParent(null);
+                    }
+                    else if(parentNode.getLeft()==currNode)
+                    {
+                        //currNode is a left node of parent
+                        parentNode.setLeft(currNode.left);
+                        currNode.left.setParent(parentNode);
+                    }
+                    else
+                    {
+                        //currNode is a right node of parent
+                        parentNode.setRight(currNode.left);
+                        currNode.left.setParent(parentNode);
+                    }
+                    --size;
+                    return removedVal;
+                }
+                else if(currNode.getLeft()==null)//Has only right child
+                {
+                    V removedVal = currNode.getValue();
+                    if(parentNode==null)//Node to remove is root, right child
+                    {
+                        //Replace root with right child, set null parent
+                        root = currNode.getRight();
+                        root.setParent(null);
+                    }
+                    else if(parentNode.getLeft()==currNode)
+                    {
+                        //currNode is a left node of parent
+                        parentNode.setLeft(currNode.right);
+                        currNode.right.setParent(parentNode);
+                    }
+                    else
+                    {
+                        //curNode is a right node of parent
+                        parentNode.setRight(currNode.right);
+                        currNode.right.setParent(parentNode);
+                    }
+                    --size;
+                    return removedVal;
+                }
+                else
+                {
+                    //currNode has 2 children
+                    V removedVal = currNode.getValue();
+                    V successorVal = currNode.successor().getValue();
+                    K successorKey = currNode.successor().getKey();
+                    //Save successor key and value to replace currNode later
+                    remove(successorKey);
+                    //Remove the successor and set currNode data.
+                    currNode.setKey(successorKey);
+                    currNode.setValue(successorVal);
+                    return removedVal;
+                }
+            }
+            else if(key.compareTo(currNode.key)<0)
+            {
+                //Key being searched is less than current key, traverse left
+                parentNode = currNode;
+                currNode = currNode.getLeft();
+            }
+            else
+            {
+                //Key being searched greater than current key, traverse right
+                parentNode = currNode;
+                currNode = currNode.getRight();
+            }
+        }
+        //If the while loop exits, currNode is null meaning key doesnt exist
         return null;
     }
 
@@ -162,15 +280,21 @@ public class MyBST<K extends Comparable<K>, V>
      * ArrayList should be returned. Hint: it might be helpful to think about
      * what the successor method does and how it relates to an in-order
      * traversal. Using sorting algorithms is not allowed for this method.
-     * @return
+     * 
+     * @return Arraylist of MyBSTNodes inorder
      */
     public ArrayList<MyBSTNode<K, V>> inorder()
     {
         ArrayList<MyBSTNode<K, V>> inorderList = new ArrayList<>();
         recursiveBSTInorderList(root, inorderList);
-        return null;
+        return inorderList;
     }
 
+    /**
+     * Recursive helper method for adding nodes inorder to an arraylist.
+     * @param node node to recurse through.
+     * @param inorderList List to add notes to.
+     */
     private void recursiveBSTInorderList(MyBSTNode<K,V> node,
         ArrayList<MyBSTNode<K, V>> inorderList)
     {
@@ -182,6 +306,19 @@ public class MyBST<K extends Comparable<K>, V>
 
     }
 
+    /**
+     * The MyBSTNode class is a static class of MyBST that uses the generic,
+     * K for a key and V for a value. It contains a left, right and parent
+     * node for MyBST to keep track of a BST structure. It contains a way to
+     * compare nodes, get and set nodes and more.
+     * 
+     * Instance variables:
+     * key - key of node to compare by
+     * value - value contained by node
+     * parent - node's parent, is null if a root node
+     * left - left node
+     * right - right node
+     */
     static class MyBSTNode<K, V>
     {
         private static final String TEMPLATE = "Key: %s, Value: %s";
@@ -304,10 +441,36 @@ public class MyBST<K extends Comparable<K>, V>
             this.right = newRight;
         }
 
+        /**
+         * This method returns the node with the smallest key that is still
+         * larger than the key of the current node. If there is no larger
+         * key, return null.
+         * @return the successor node
+         */
         public MyBSTNode<K, V> successor()
         {
-            // TODO
-            return null;
+            MyBSTNode<K,V> currNode= this;
+            if(currNode.getRight()!=null)
+            {
+                currNode = this.getRight();
+                while(currNode.getLeft()!=null)
+                {
+                    currNode = currNode.getLeft();
+                }
+                return currNode;
+            }
+            else
+            {
+                //Right subtree does not exist
+                MyBSTNode<K,V> parentNode = currNode.getParent();
+                while(parentNode != null && parentNode.right == currNode)
+                {
+                    //While current node is not null and right of parent
+                    currNode = parentNode;
+                    parentNode = parentNode.getParent();
+                }
+                return parentNode;
+            }
         }
 
         /**
