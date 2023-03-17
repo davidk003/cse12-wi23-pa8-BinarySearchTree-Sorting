@@ -13,20 +13,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-
-import org.junit.Before;
 import org.junit.Test;
 
 
 public class CustomTester
 {
+    //=================== SETUP ========================================
     
-    @Before
-    public void generateRandomBST()
-    {
-
-    }
-
+    /**
+     * Loads a BST by BST rules without using insert.
+     * @param keys array of keys to load nodes
+     * @param values array of values to load nodes
+     * @return BST loaded with keys and values given
+     */
     public static MyBST<Integer, String>
         loadBST(Integer[] keys, String[] values)
     {
@@ -82,6 +81,9 @@ public class CustomTester
         return testBST;
     }
     
+    /**
+     * Testing the loadBST() method
+     */
     @Test
     public void testInsertionLoadBST()
     {
@@ -101,8 +103,11 @@ public class CustomTester
         compareBST(loadedBST, realtestBST);
     }
 
-
-    
+    /**
+     * Compares 2 MyBSTs with assertions
+     * @param expectedBST the expected "correct" result
+     * @param actualBST your result
+     */
     public void compareBST(MyBST<Integer, String> expectedBST, 
     MyBST<Integer, String> actualBST)
     {
@@ -154,17 +159,45 @@ public class CustomTester
     //better way found
 
 
+
+    //==================== Initialize BST test ============================
+
+    /**
+     * Tests to make sure initial conditions of a BST are correct
+     */
+    @Test
+    public void initialBST()
+    {
+        MyBST<Integer, String> testBST = new MyBST<>();
+        assertEquals(0, testBST.size);
+        assertNull(testBST.root);
+
+    }
+
+    
     //====================== INSERT TESTS =============================
 
     /** Test for inserting a null key, should throw NullPointerException */
     @Test
     public void insertNullKey()
     {
-        MyBST<Integer, Integer> testBST = new MyBST<>();
-        Integer testInteger = 5;
+        MyBST<Integer, String> testBST = new MyBST<>();
+
+
         assertThrows(NullPointerException.class,
-            ()->{testBST.insert(null, testInteger);});
-        //Check null insert after BST is loaded.
+            ()->{testBST.insert(null, "Five");});
+        assertNull(testBST.root);
+        assertEquals(0, testBST.size);
+
+        //Check null insert after BST has a node
+        testBST.root=new MyBST.MyBSTNode<Integer,String>(5, "Five", null);
+        testBST.size++;
+
+        assertThrows(NullPointerException.class,
+            ()->{testBST.insert(null, "Six");});
+        assertEquals(new MyBST.MyBSTNode<Integer,String>(5, "Five", null),
+            testBST.root);
+        assertEquals(1, testBST.size);
     }
 
     @Test
@@ -321,12 +354,42 @@ public class CustomTester
     public void searchNullKey()
     {
         MyBST<Integer, String> testBST = new MyBST<>();
-        assertNull(testBST.search(null));
 
-        testBST.insert(5, "Five");
+        assertEquals(0, testBST.size);
         assertNull(testBST.search(null));
+        assertEquals(testBST.root, null);
+        
 
+        testBST.root = new MyBST.MyBSTNode<>(5, "Five", null);
+        testBST.size++;
+
+        assertEquals(1, testBST.size);
+        assertNull(testBST.search(null));
+        assertEquals(new MyBST.MyBSTNode<>(5, "Five", null), testBST.root);
     }
+
+    @Test
+    public void searchKeySingleNode()
+    {
+        Integer[] keys = {6};
+        String[] values = {"Six"};
+        MyBST<Integer, String> loadedBST = loadBST(keys, values);
+        MyBST<Integer, String> testBST = new MyBST<>();
+        testBST.root = new MyBST.MyBSTNode<Integer,String>(6, "Six", null);
+        testBST.size++;
+
+        assertEquals(values[0], testBST.search(6));
+        assertEquals(1, testBST.size);//Size unchanged
+        //Root should be unchanged
+        assertEquals(new MyBST.MyBSTNode<>(6, "Six", null), testBST.root);
+        
+        assertEquals(values[0], loadedBST.search(6));
+        assertEquals(1, loadedBST.size);//Size unchanged
+        //Root should be unchanged
+        assertEquals(new MyBST.MyBSTNode<>(6, "Six", null), loadedBST.root);
+    }
+
+    
 
 
 
@@ -343,9 +406,26 @@ public class CustomTester
     public void removeNullKeyEmptyBST()
     {
         MyBST<Integer, String> testBST = new MyBST<>();
+
         assertNull(testBST.remove(null));
+        assertEquals(0, testBST.size);
+        assertNull(testBST.root);
+        //Check that all removal doesnt change the size or root.
+
+        //Check remove(null) after BST has a node
+        testBST.root=new MyBST.MyBSTNode<Integer,String>(5, "Five", null);
+        testBST.size++;
+
+        assertNull(testBST.remove(null));
+        assertEquals(1, testBST.size);
+        assertEquals(new MyBST.MyBSTNode<Integer,String>(5, "Five", null),
+            testBST.root);
+
     }
 
+    /**
+     * Remove a null key from an BST with one node
+     */
     @Test
     public void removeNullKeyNonEmptyBST()
     {
@@ -362,5 +442,184 @@ public class CustomTester
         
     }
 
+    //============= TEST SUCCESSOR() ====================================//
+    
+    /**
+     * Successor() on a node without a right subtree
+     */
+    @Test
+    public void testSuccessorWithNoRightSubtree()
+    {
+        MyBST.MyBSTNode<Integer, String> root=
+            new MyBST.MyBSTNode<>(5, "A", null);
+        MyBST.MyBSTNode<Integer, String> node1=
+            new MyBST.MyBSTNode<>(2, "B",root);
+        MyBST.MyBSTNode<Integer, String> node2=
+            new MyBST.MyBSTNode<>(8, "C",root);
+        MyBST.MyBSTNode<Integer, String> node3=
+            new MyBST.MyBSTNode<>(1, "D",node1);
+        MyBST.MyBSTNode<Integer, String> node4=
+            new MyBST.MyBSTNode<>(3, "E",node1);
+        MyBST.MyBSTNode<Integer, String> node5=
+            new MyBST.MyBSTNode<>(6, "F",node2);
+        MyBST.MyBSTNode<Integer, String> node6=
+            new MyBST.MyBSTNode<>(9, "G",node2);
+        node1.setLeft(node3);
+        node1.setRight(node4);
+        node2.setLeft(node5);
+        node2.setRight(node6);
+        assertEquals(node1.successor(), node4);
+    }
+    
+    /**
+     * Successor() on a node with right subtree, traverses left after.
+     */
+    @Test
+    public void testSuccessorWithRightSubtree()
+    {
+        MyBST.MyBSTNode<Integer, String> root =
+            new MyBST.MyBSTNode<>(5, "Five", null);
+        MyBST.MyBSTNode<Integer, String> node1 =
+            new MyBST.MyBSTNode<>(2, "Two", root);
+        MyBST.MyBSTNode<Integer, String> node2 =
+            new MyBST.MyBSTNode<>(8, "Eight", root);
+        MyBST.MyBSTNode<Integer, String> node3 =
+            new MyBST.MyBSTNode<>(1, "One", node1);
+        MyBST.MyBSTNode<Integer, String> node4 =
+            new MyBST.MyBSTNode<>(3, "Three", node1);
+        MyBST.MyBSTNode<Integer, String> node5 =
+            new MyBST.MyBSTNode<>(6, "Six", node2);
+        MyBST.MyBSTNode<Integer, String> node6 =
+            new MyBST.MyBSTNode<>(9, "Nine", node2);
+        MyBST.MyBSTNode<Integer, String> node7 =
+            new MyBST.MyBSTNode<>(7, "Seven", node5);
+        root.setRight(node2);
+        root.setLeft(node1);
+        node1.setLeft(node3);
+        node1.setRight(node4);
+        node2.setLeft(node5);
+        node2.setRight(node6);
+        node5.setRight(node7);
+        assertEquals(node2.successor(), node6);
+        assertEquals(node1.successor(), node4);
+        assertEquals(node5.successor(), node7);
+        assertEquals(root.successor(), node5);
+    }
+    
+    @Test
+    public void testSuccessorWithNoSuccessor()
+    {
+        MyBST.MyBSTNode<Integer, String> root =
+            new MyBST.MyBSTNode<>(5, "A", null);
+        MyBST.MyBSTNode<Integer, String> node1 =
+            new MyBST.MyBSTNode<>(2, "B", root);
+        MyBST.MyBSTNode<Integer, String> node2 =
+            new MyBST.MyBSTNode<>(8, "C", root);
+        MyBST.MyBSTNode<Integer, String> node3 =
+            new MyBST.MyBSTNode<>(1, "D", node1);
+        MyBST.MyBSTNode<Integer, String> node4 =
+            new MyBST.MyBSTNode<>(3, "E", node1);
+        MyBST.MyBSTNode<Integer, String> node5 =
+            new MyBST.MyBSTNode<>(6, "F", node2);
+        MyBST.MyBSTNode<Integer, String> node6 =
+            new MyBST.MyBSTNode<>(9, "G", node2);
+        MyBST.MyBSTNode<Integer, String> node7 =
+            new MyBST.MyBSTNode<>(7, "H", node5);
+        node1.setLeft(node3);
+        node1.setRight(node4);
+        node2.setLeft(node5);
+        node2.setRight(node6);
+        node5.setRight(node7);
+        assertNull(node6.successor());
+    }
 
+    @Test
+    public void testSuccessorWithRightSubtreeAndLeftmostNodeWithNoLeftChild()
+    {
+        MyBST.MyBSTNode<Integer, String> root =
+            new MyBST.MyBSTNode<>(5, "Five", null);
+        MyBST.MyBSTNode<Integer, String> node2 =
+            new MyBST.MyBSTNode<>(2, "Two", root);
+        MyBST.MyBSTNode<Integer, String> node4 =
+            new MyBST.MyBSTNode<>(4, "Four", node2);
+        MyBST.MyBSTNode<Integer, String> node8 =
+            new MyBST.MyBSTNode<>(8, "Eight", root);
+
+        root.setLeft(node2);
+        root.setRight(node8);
+        node2.setRight(node4);
+
+        // Check that the successor of node2 is node4
+        assertEquals(node4, node2.successor());
+
+        // Set node4's right child to null to make it the leftmost node in the right subtree with no left child
+        node4.setRight(null);
+
+        // Check that the successor of node2 is node8
+        assertEquals(node8, node2.successor());
+    }
+
+    @Test
+    public void testSuccessorLargeTree()
+    {
+        Integer[] keys = {5, 3, 7, 2, 4, 6, 8};
+        String[] values = 
+            {"five", "three", "seven", "two", "four", "six", "eight"};
+        MyBST<Integer, String> loadedBST = loadBST(keys, values);
+        //Get minimum
+        MyBST.MyBSTNode<Integer,String> minNode =
+            loadedBST.root.getLeft().getLeft();
+        assertEquals(minNode,
+            new MyBST.MyBSTNode<>(2, "two", loadedBST.root.getLeft()));
+
+        for(int i = 2; i < 9; i++)
+        {
+            assertEquals(Integer.valueOf(i), minNode.getKey());
+            minNode = minNode.successor();
+        }
+        assertNull(minNode);
+    }
+
+    /**
+     * Test successor() on a right linear tree
+     */
+    @Test
+    public void testSuccessorLinearTree()
+    {
+        Integer[] keys = {1, 2, 3, 4, 5, 6, 7};
+        String[] values = 
+            {"one", "two", "three", "four", "five", "six", "seven"};
+        MyBST<Integer, String> loadedBST = loadBST(keys, values);
+
+        MyBST.MyBSTNode<Integer,String> currNode = loadedBST.root;
+        
+        for(int i = 1; i < 8; i++)
+        {
+            assertEquals(Integer.valueOf(i), currNode.getKey());
+            assertEquals(values[i-1], currNode.getValue());
+            assertEquals(currNode.getRight(), currNode.successor());
+            currNode = currNode.successor();
+        }
+    }
+
+    /**
+     * Test successor where there is no larger node/root.
+     */
+    @Test
+    public void testSuccessorNoLargerNode()
+    {
+        MyBST<Integer, String> testBST = new MyBST<>();
+        testBST.root = new MyBST.MyBSTNode<Integer,String>(5, "Five", null);
+        testBST.size++;
+
+        assertNull(testBST.root.successor());
+        assertEquals(1, testBST.size);
+
+        testBST.root.setRight(
+            new MyBST.MyBSTNode<Integer,String>(6, "Six", testBST.root));
+        testBST.size++;
+
+        assertNull(testBST.root.getRight().successor());
+        assertEquals(2, testBST.size);
+    }
 }
