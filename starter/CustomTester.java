@@ -458,7 +458,6 @@ public class CustomTester
         assertEquals(1, testBST.size);
         assertEquals(new MyBST.MyBSTNode<Integer,String>(5, "five", null),
             testBST.root);
-        
     }
 
     //============= TEST SUCCESSOR() ====================================//
@@ -547,8 +546,8 @@ public class CustomTester
         // // Check that the successor of node2 is node4
         // assertEquals(node4, node2.successor());
 
-        // // Set node4's right child to null to make it the leftmost node in the
-        // //right subtree with no left child
+        // // Set node4's right child to null to make it the leftmost node in
+        // //the right subtree with no left child
         // node4.setRight(null);
 
         // // Check that the successor of node2 is node8
@@ -623,6 +622,22 @@ public class CustomTester
     }
 
     //============== TESTS FOR INORDER() =================================//
+    
+    /**
+     * Testing inorder() for one node.
+     */
+    @Test
+    public void testInorderOneNodeBST() {
+        MyBST<Integer, String> bst = new MyBST<>();
+    
+        bst.root = new MyBST.MyBSTNode<>(1, "One", null);
+        bst.size++;
+    
+        ArrayList<MyBST.MyBSTNode<Integer, String>> inorderList = bst.inorder();
+    
+        assertEquals(1, inorderList.size());
+        assertEquals(bst.root, inorderList.get(0));
+    }
     
     /**
      * Tests inorder() on a BST with 3 nodes.
