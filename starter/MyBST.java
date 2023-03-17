@@ -8,10 +8,6 @@
  */
 import java.util.ArrayList;
 
-//QUESTIONS: so search(null) should always return null?
-//WHEN INSERT() replaces a node, should it make a new Node object or can I
-//replace only the value?
-
 /**
  * The MyBST class contains a binary search tree structure containing nodes
  * with a key value system. The tree is arranged by the key which must
