@@ -422,7 +422,7 @@ public class CustomTester
      */
 
     @Test
-    public void removeNullKeyEmptyBST()
+    public void removeNullKey()
     {
         MyBST<Integer, String> testBST = new MyBST<>();
 
@@ -443,6 +443,62 @@ public class CustomTester
     }
 
     /**
+     * test for remove() on a non existing key in the BST
+     */
+    @Test
+    public void testRemoveNonExistingKey() {
+        MyBST<Integer, String> bst = new MyBST<>();
+        bst.root = new MyBST.MyBSTNode<Integer,String>(1, "One", null);
+        bst.size++;
+    
+        assertNull(bst.remove(2));
+        assertEquals(1, bst.size());
+        assertEquals( new MyBST.MyBSTNode<Integer,String>(1, "One", null),
+            bst.root);
+    }
+    
+    /**
+     * Test to remove() on a node with only left child
+     */
+    @Test
+    public void testRemoveNodeWithLeftChild() {
+        MyBST<Integer, String> bst = new MyBST<>();
+        bst.root = new MyBST.MyBSTNode<>(2, "two", null);
+        MyBST.MyBSTNode<Integer, String> leftNode =
+            new MyBST.MyBSTNode<>(1, "one", bst.root);
+    
+        bst.root.setLeft(leftNode);
+        bst.size = 2;
+    
+        assertEquals("two", bst.remove(2));
+        assertEquals(1, bst.size());
+        assertEquals("one", bst.root.getValue());
+        assertNull(bst.root.getRight());
+        assertNull(bst.root.getParent());
+    }
+
+    /**
+     * Test to remove() on a node with only right child
+     */
+    @Test
+    public void testRemoveNodeWithRightChild() {
+        MyBST<Integer, String> bst = new MyBST<>();
+        bst.root = new MyBST.MyBSTNode<>(2, "two", null);
+        MyBST.MyBSTNode<Integer, String> rightNode =
+            new MyBST.MyBSTNode<>(3, "three", bst.root);
+        bst.root.setRight(rightNode);
+        bst.size=2;
+
+        assertEquals("two", bst.remove(2));
+        assertEquals(1, bst.size());
+        assertEquals("three", bst.root.getValue());
+        assertNull(bst.root.getLeft());
+        assertNull(bst.root.getParent());
+    }
+    
+    
+
+    /**
      * Remove a null key from an BST with one node
      */
     @Test
@@ -459,6 +515,65 @@ public class CustomTester
         assertEquals(new MyBST.MyBSTNode<Integer,String>(5, "five", null),
             testBST.root);
     }
+
+    /**
+     * Remove multiple keys from a BST of 5 nodes.
+     */
+    @Test
+    public void removeFiveKeysfromBST()
+    {
+        MyBST<Integer, String> testbst = new MyBST<>();
+    
+        MyBST.MyBSTNode<Integer, String> node3 =
+            new MyBST.MyBSTNode<>(3, "Three", null);
+        MyBST.MyBSTNode<Integer, String> node1 =
+            new MyBST.MyBSTNode<>(1, "One", node3);
+        MyBST.MyBSTNode<Integer, String> node4 =
+            new MyBST.MyBSTNode<>(4, "Four", node3);
+        MyBST.MyBSTNode<Integer, String> node2 =
+            new MyBST.MyBSTNode<>(2, "Two", node1);
+        MyBST.MyBSTNode<Integer, String> node5 =
+            new MyBST.MyBSTNode<>(5, "Five", node4);
+    
+        testbst.root = node3;
+        testbst.root.setLeft(node1);
+        testbst.root.setRight(node4);
+        node1.setRight(node2);
+        node4.setRight(node5);
+        testbst.size = 5;
+
+        assertEquals("Three", testbst.remove(3));
+        assertEquals(4, testbst.size);
+        assertEquals(node4, testbst.root);
+        assertEquals(node5, testbst.root.getRight());
+        assertEquals(node1, testbst.root.getLeft());
+        assertEquals(node2, testbst.root.getLeft().getRight());
+
+        assertEquals("One", testbst.remove(1));
+        assertEquals(3, testbst.size);
+        assertEquals(node4, testbst.root);
+        assertEquals(node5, testbst.root.getRight());
+        assertEquals(node2, testbst.root.getLeft());
+
+        assertEquals("Four", testbst.remove(4));
+        assertEquals(2, testbst.size);
+        assertEquals(node5, testbst.root);
+        assertEquals(node2, testbst.root.getLeft());
+
+        assertEquals("Five", testbst.remove(5));
+        assertEquals(1, testbst.size);
+        assertEquals(node2, testbst.root);
+
+        assertEquals("Two", testbst.remove(2));
+        assertEquals(0, testbst.size);
+        assertEquals(null, testbst.root);
+
+        assertEquals(null, testbst.remove(2));
+        assertEquals(0, testbst.size);
+        assertEquals(null, testbst.root);
+        
+    }
+
 
     //============= TEST SUCCESSOR() ====================================//
     
